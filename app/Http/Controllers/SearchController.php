@@ -1,27 +1,50 @@
 <?php
-namespace App\Http\Controllers;
 
-use App\Models\Tag;
+namespace App\Http\Controllers;
+use App\Models\Informasi; // Import the Informasi model
+use App\Models\Agenda; // Import the Agenda model
+use App\Models\Galery; // Import the Galery model
 use Illuminate\Http\Request;
+
 
 class SearchController extends Controller
 {
-    public function searchByTag(Request $request)
+    public function index(Request $request)
     {
-        $tag = Tag::where('slug', $request->tag)->firstOrFail();
-        $type = $request->type;
+        $query = $request->input('query');
+        $keywords = explode(' ', $query); // Split the query into keywords
 
-        $results = [];
-        if (!$type || $type === 'informasi') {
-            $results['informasi'] = $tag->informasi;
-        }
-        if (!$type || $type === 'agenda') {
-            $results['agenda'] = $tag->agenda;
-        }
-        if (!$type || $type === 'galeri') {
-            $results['galeries'] = $tag->galeries;
-        }
+        // Search for Informasi
+        $informasiResults = Informasi::where(function($q) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $q->orWhere('judul', 'LIKE', "%{$keyword}%")
+                  ->orWhere('deskripsi', 'LIKE', "%{$keyword}%");
+            }
+        })->with('kategori', 'user')->get();
 
-        return view('web.search.results', compact('results', 'tag', 'type'));
+        // Search for Agenda
+        $agendaResults = Agenda::where(function($q) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $q->orWhere('judul', 'LIKE', "%{$keyword}%")
+                  ->orWhere('deskripsi', 'LIKE', "%{$keyword}%");
+            }
+        })->with('kategori', 'user')->get();
+
+        // Search for Galery
+        $galeryResults = Galery::where(function($q) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $q->orWhere('judul', 'LIKE', "%{$keyword}%")
+                  ->orWhere('deskripsi', 'LIKE', "%{$keyword}%");
+            }
+        })->with('kategori', 'user')->get();
+
+        // Combine results
+        $results = [
+            'informasi' => $informasiResults,
+            'agenda' => $agendaResults,
+            'galery' => $galeryResults,
+        ];
+
+        return view('search.results', compact('results', 'query'));
     }
 }

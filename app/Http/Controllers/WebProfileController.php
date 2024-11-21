@@ -21,40 +21,29 @@ class WebProfileController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'email' => 'required|email|unique:users,email,' . $user->id,
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-        ];
+        $user->name = $request->name;
+        $user->email = $request->email;
 
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama jika ada
-            if ($user->avatar && Storage::exists('public/' . str_replace('storage/', '', $user->avatar))) {
-                Storage::delete('public/' . str_replace('storage/', '', $user->avatar));
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
             }
 
-            // Upload avatar baru
-            $avatar = $request->file('avatar');
-            $filename = 'avatars/' . time() . '_' . $user->id . '.' . $avatar->getClientOriginalExtension();
-            $avatar->storeAs('public', $filename);
-            $data['avatar'] = 'storage/' . $filename;
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
         }
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
+        $user->save();
 
-        $user->update($data);
-
-        return redirect()->route('web.profile')->with('success', 'Profile berhasil diperbarui');
+        return redirect()->route('web.profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function destroy()

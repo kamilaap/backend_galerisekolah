@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/jpg"  href="{{ asset('assets/images/logo/logo.png') }}" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Edit Profile - SMKN 4 Bogor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -55,78 +57,65 @@
             <div class="profile-card p-8">
                 <h1 class="text-2xl font-bold text-center mb-8">Edit Profile</h1>
 
-                <form action="{{ route('web.profile.update') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('web.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
-                    <!-- Avatar Upload -->
-                    <div class="avatar-upload mb-8">
-                        <div class="avatar-edit">
-                            <label for="avatar" class="bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-camera"></i>
-                                <input type="file"
-                                       id="avatar"
-                                       name="avatar"
-                                       class="hidden"
-                                       accept="image/*"
-                                       onchange="previewImage(event)">
-                            </label>
-                        </div>
-                        <div class="avatar-preview">
-                            <img id="avatar-preview"
-                                 src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}"
-                                 alt="Profile Avatar"
-                                 class="w-full h-full object-cover">
+                    <!-- Avatar Upload Section -->
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Foto Profil</label>
+
+                        <!-- Preview Avatar -->
+                        <div class="flex items-center space-x-6">
+                            <div class="shrink-0">
+                                <img id="avatar-preview"
+                                     class="h-32 w-32 object-cover rounded-full border-4 border-white shadow-lg"
+                                     src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
+                                     alt="Avatar preview">
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                                    <span>Pilih Foto</span>
+                                    <input type="file"
+                                           name="avatar"
+                                           id="avatar-input"
+                                           accept="image/*"
+                                           class="hidden"
+                                           onchange="previewImage(event)">
+                                </label>
+                                <p class="mt-2 text-sm text-gray-500">
+                                    PNG, JPG, GIF hingga 2MB
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Form Fields -->
-                    <div class="space-y-6">
-                        <!-- Name -->
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                            <input type="text"
-                                   id="name"
-                                   name="name"
-                                   value="{{ auth()->user()->name }}"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
+                    <!-- Nama -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text"
+                               name="name"
+                               id="name"
+                               value="{{ old('name', auth()->user()->name) }}"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
 
-                        <!-- Email -->
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email"
-                                   id="email"
-                                   name="email"
-                                   value="{{ auth()->user()->email }}"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email"
+                               name="email"
+                               id="email"
+                               value="{{ old('email', auth()->user()->email) }}"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
 
-                        <!-- Password -->
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru (opsional)</label>
-                            <input type="password"
-                                   id="password"
-                                   name="password"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="Biarkan kosong jika tidak ingin mengubah">
-                        </div>
-
-                        <!-- Password Confirmation -->
-                        <div>
-                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
-                            <input type="password"
-                                   id="password_confirmation"
-                                   name="password_confirmation"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                Simpan Perubahan
-                            </button>
-                        </div>
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                            Simpan Perubahan
+                        </button>
                     </div>
                 </form>
             </div>

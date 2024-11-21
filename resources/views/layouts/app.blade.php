@@ -7,7 +7,7 @@
 shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="shortcut icon" type="image/jpg"
-        href="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" />
+    href="{{ asset('assets/images/logo/logo.png') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
     <!-- css -->
@@ -128,7 +128,9 @@ js" defer></script>
 
             <!-- Logo -->
             <div class="flex items-center justify-center p-6 border-b border-blue-700">
-                <img src="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" class="h-10 w-auto" alt="Logo">
+                <img src="{{ asset('assets/images/logo/logo.png') }}"
+                     class="h-10 w-auto"
+                     alt="Logo SMKN 4 Bogor">
                 <div class="ml-3">
                     <h1 class="text-white font-bold text-lg">SMKN 4 BOGOR</h1>
                     <p class="text-blue-200 text-xs">Admin Dashboard</p>
@@ -196,6 +198,12 @@ js" defer></script>
                     <i class="fas fa-users nav-icon"></i>
                     <span>Users</span>
                 </a>
+  <!-- Button for Jurusan -->
+  <a href="{{ route('admin.jurusan.index') }}"
+       class="sidebar-link {{ Request::is('departments*') ? 'active' : '' }}">
+        <i class="fas fa-graduation-cap nav-icon"></i>
+        <span>Jurusan</span>
+    </a>
 
                 <div class="border-t border-blue-700 my-4"></div>
 
@@ -257,11 +265,13 @@ js" defer></script>
                                 <i class="fas fa-cog mr-2"></i>Website
                             </a>
                             <div class="border-t border-gray-100"></div>
-                            <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                               class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                        class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

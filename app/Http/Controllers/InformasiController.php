@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Informasi;
-use App\Models\Tag;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -23,7 +23,7 @@ class InformasiController extends Controller
             'tanggal' => 'required|date',
             'kategori_id' => 'required|exists:kategori,id',
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'tags' => 'nullable|string'
+
         ]);
 
         $imagePath = null;
@@ -41,17 +41,7 @@ class InformasiController extends Controller
             'image' => $imagePath
         ]);
 
-        if($request->has('tags')) {
-            $tags = collect(explode(',', $request->tags))
-                ->map(function($tag) {
-                    return Tag::firstOrCreate(
-                        ['name' => trim($tag)],
-                        ['slug' => Str::slug(trim($tag))]
-                    );
-                });
-
-            $informasi->tags()->sync($tags->pluck('id'));
-        }
+       
 
         return redirect()->route('admin.informasi.index')
             ->with('success', 'Informasi berhasil ditambahkan');

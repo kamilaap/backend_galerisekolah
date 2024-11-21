@@ -63,8 +63,4 @@ class Informasi extends Model
         return $this->belongsTo(User::class, 'users_id'); // Mengubah 'created_by' menjadi 'users_id' sesuai field yang ada
     }
 
-    public function hashtags()
-    {
-        return $this->belongsToMany(Hashtag::class, 'informasi_hashtag');
-    }
 }

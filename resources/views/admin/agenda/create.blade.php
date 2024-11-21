@@ -120,8 +120,8 @@
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
 
+                   
                 <!-- Submit Buttons -->
                 <div class="flex justify-end space-x-2">
                     <button type="reset"

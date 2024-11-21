@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\ContactController;
 
 /*
  * Routes for getting authenticated user (only if token is valid)
@@ -28,8 +29,8 @@ Route::apiResource('sliders', SliderController::class);
 
 // Auth Routes
 Route::post('register', action: [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->get('logout', [AuthController::class, 'logout']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 
 // Galery Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -58,4 +59,18 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('photos/{photo}/comments', [CommentController::class, 'getPhotoComments']);
     Route::post('photos/{photo}/comments', [CommentController::class, 'addComment']);
+});
+
+// Contact Routes
+Route::post('/contact', [ContactController::class, 'store']);
+
+// Route yang memerlukan autentikasi
+Route::middleware('auth:sanctum')->group(function () {
+    // Route untuk admin
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('/dashboard', 'AdminDashboardController@index');
+    });
+
+    // Route untuk user biasa
+    Route::get('/profile', 'ProfileController@show');
 });

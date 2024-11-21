@@ -61,44 +61,33 @@ class AuthController extends Controller
     // Login
     public function login(Request $request)
     {
-        try {
-            $validateUser = Validator::make($request->all(), [
-                'email' => 'required|string|email|max:255',
-                'password' => 'required|string|min:6',
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Buat token untuk API
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            // Tentukan redirect berdasarkan role
+            $redirect = $user->role === 'admin' ? '/admin/dashboard' : '/';
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login berhasil',
+                'role' => $user->role,
+                'token' => $token,
+                'redirect' => $redirect
             ]);
-
-            if ($validateUser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validateUser->errors()
-                ], 401);
-            }
-
-            if (!Auth::attempt($request->only(['email', 'password']))) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email & password do not match our records.'
-                ], 401);
-            }
-
-            $user = User::where('email', $request->email)->first();
-
-            // Kirim role dalam respons
-            $message = $user->role === 'petugas' ? 'Petugas logged in successfully' : 'User logged in successfully';
-
-            return response()->json([
-                'status' => true,
-                'message' => $message,
-                'token' => $user->createToken("API TOKEN")->plainTextToken,
-                'role' => $user->role // Tambahkan role ke response
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage(),
-            ], 500);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Email atau password salah'
+        ], 401);
     }
 
 public function logout()

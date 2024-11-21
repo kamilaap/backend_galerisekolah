@@ -24,26 +24,28 @@ class GaleryController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'judul' => 'required',
-            'deskripsi' => 'required',
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'is_map' => 'boolean',
             'tanggal' => 'required|date',
-            'kategori_id' => 'required|exists:kategori,id',
-            'is_map' => 'required|boolean',
-            // ... validasi lainnya
+            'status' => 'required|string',
+            'kategori_id' => 'required|integer',
+            'users_id' => 'required|integer',
+            'jurusan_id' => 'required|integer', // Pastikan ini divalidasi
         ]);
 
-        $galery = Galery::create([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'is_map' => $request->is_map,
-            'tanggal' => $request->tanggal,
-            'status' => 'active',
-            'kategori_id' => $request->kategori_id,
-            'users_id' => auth()->id(),
-        ]);
+        $galery = new Galery();
+        $galery->judul = $request->judul;
+        $galery->deskripsi = $request->deskripsi;
+        $galery->is_map = $request->is_map;
+        $galery->tanggal = $request->tanggal;
+        $galery->status = $request->status;
+        $galery->kategori_id = $request->kategori_id;
+        $galery->users_id = $request->users_id;
+        $galery->jurusan_id = $request->jurusan_id; // Setel nilai ini dari permintaan
+        $galery->save();
 
-        return redirect()->route('admin.galery.index')
-            ->with('success', 'Galeri berhasil ditambahkan');
+        return redirect()->route('galery.index')->with('success', 'Item galeri berhasil dibuat.');
     }
 }

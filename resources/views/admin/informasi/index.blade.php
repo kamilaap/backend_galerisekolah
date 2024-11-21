@@ -17,7 +17,7 @@
                                name="q"
                                value="{{ request()->query('q') }}"
                                class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                               placeholder="Cari informasi...">
+                               placeholder="Cari Berdasarkan Kategori.....">
                     </form>
                 </div>
 

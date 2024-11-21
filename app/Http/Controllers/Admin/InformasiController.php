@@ -71,7 +71,7 @@ class InformasiController extends Controller
             'users_id' => auth()->user()->id,
             'image' => $imagePath, // Simpan path gambar
         ]);
-
+ 
         return $informasi
             ? redirect()->route('admin.informasi.index')->with(['success' => 'Data Berhasil Disimpan!'])
             : redirect()->route('admin.informasi.index')->with(['error' => 'Data Gagal Disimpan!']);

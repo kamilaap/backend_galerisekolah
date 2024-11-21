@@ -7,6 +7,7 @@ use App\Models\Kategori;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Carbon\Carbon;
 
 class AgendaController extends Controller
 {
@@ -121,5 +122,26 @@ class AgendaController extends Controller
         $agenda->delete();
 
         return response()->json(['status' => 'success']);
+    }
+
+    public function showByDate($date)
+    {
+        try {
+            // Parse tanggal dan validasi format
+            $parsedDate = Carbon::parse($date)->format('Y-m-d');
+
+            // Ambil agenda untuk tanggal tersebut
+            $agendas = Agenda::whereDate('tanggal', $parsedDate)
+                            ->orderBy('waktu', 'asc')
+                            ->get();
+
+            return view('web.agenda.show-by-date', [
+                'agendas' => $agendas,
+                'date' => $parsedDate
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('web.agenda.index')
+                           ->with('error', 'Tanggal tidak valid');
+        }
     }
 }

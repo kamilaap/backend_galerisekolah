@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/jpg"  href="{{ asset('assets/images/logo/logo.png') }}" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Detail Galeri - {{ $galery->judul }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -147,41 +149,440 @@
             display: inline-block;
             margin-bottom: 0.5rem;
         }
+
+        /* Navbar styling */
+        .navbar-blur {
+            background: linear-gradient(to right, #0c4a6e, #075985); /* Darker sky blue gradient */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Navigation link styling */
+        .nav-link {
+            position: relative;
+            color: #e0f2fe; /* Light sky blue */
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #38bdf8; /* Sky blue 400 */
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover {
+            color: #38bdf8; /* Sky blue 400 */
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Search bar styling */
+        .search-input {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #e0f2fe; /* Light sky blue */
+        }
+
+        .search-input::placeholder {
+            color: rgba(224, 242, 254, 0.6); /* Light sky blue with opacity */
+        }
+
+        /* Auth button styling */
+        .auth-button {
+            background: #38bdf8; /* Sky blue 400 */
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-button:hover {
+            background: #0ea5e9; /* Sky blue 500 */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            background: #0c4a6e; /* Sky blue 900 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-dropdown a,
+        .profile-dropdown button {
+            color: #e0f2fe; /* Light sky blue */
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background: #075985; /* Sky blue 800 */
+            color: #38bdf8; /* Sky blue 400 */
+        }
+
+        /* Logo section styling */
+        .logo-text {
+            color: #f0f9ff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-subtitle {
+            color: #bfdbfe;
+            font-weight: 500;
+        }
+
+        /* Hero section styling */
+        .hero-section {
+            background: linear-gradient(to right, rgba(12, 74, 110, 0.9), rgba(7, 89, 133, 0.9));
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('path/to/pattern.svg');
+            opacity: 0.1;
+            animation: slide 20s linear infinite;
+        }
+
+        /* Photo grid styling */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .photo-container {
+            position: relative;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+            overflow: hidden;
+        }
+
+        .photo-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .photo-card:hover .photo-container img {
+            transform: scale(1.1);
+        }
+
+        /* Comments section styling */
+        .comments-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-form {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        .comment-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .comment-card {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .comment-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Like button animation */
+        @keyframes likeEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .like-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8787);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(255, 107, 107, 0.2);
+        }
+
+        .like-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .like-button.liked {
+            animation: likeEffect 0.5s ease;
+        }
+
+        /* Share buttons styling */
+        .share-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .share-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .share-facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .share-instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Fullscreen modal styling */
+        .fullscreen-modal {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .fullscreen-modal img {
+            max-height: 90vh;
+            max-width: 90vw;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Stats badges */
+        .stats-badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Login message styling */
+        .login-message {
+            background: linear-gradient(135deg, #60a5fa20, #3b82f620);
+            border: 1px solid #60a5fa30;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        .login-message:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
+        }
+
+        .login-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+        }
     </style>
 </head>
 
 <body>
 
     <!-- Navbar -->
-    <nav class="bg-gray-800 p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" alt="Logo SMKN 4 Bogor" class="h-10 mr-2">
-                <a href="#" class="text-white font-bold text-lg">SMK INDONESIA DIGITAL</a>
-            </div>
+    <nav class="navbar-blur sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo dan Nama -->
+                <div class="flex items-center space-x-4">
+                      <img src="{{ asset('assets/images/logo/logo.png') }}"
+                         alt="Logo SMKN 4 Bogor"
+                         class="h-12 w-auto hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <a href="{{ route('welcome') }}"
+                           class="logo-text text-xl font-bold hover:text-blue-200 transition-colors duration-300">
+                            Edu Galery
+                        </a>
+                        <p class="logo-subtitle text-sm">Unggul dalam Digital, Berkarakter dalam Akhlak</p>
+                    </div>
+                </div>
 
-            <!-- Form Pencarian -->
-            <form id="search-form" action="{{ route('search') }}" method="GET" class="flex items-center bg-gray-700 rounded-lg overflow-hidden">
-                <input type="text" name="query" placeholder="Cari..." class="bg-transparent text-white px-4 py-1 outline-none" required>
-                <button type="submit" class="text-white px-3 hover:bg-gray-600 transition duration-300">
-                    <i class="fas fa-search"></i>
+                <!-- Search Bar -->
+                <form id="search-form" action="{{ route('search') }}" method="GET"
+                      class="hidden md:flex items-center">
+                    <div class="relative">
+                        <input type="text" name="query"
+                               placeholder="Cari Berdasarkan Kategori....."
+                               class="search-input w-64 focus:w-80 transition-all duration-300 focus:outline-none rounded-full px-6 py-2">
+                        <button type="submit"
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white transition-colors duration-300">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{{ route('web.informasi.index') }}"
+                       class="nav-link flex items-center space-x-2">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Informasi</span>
+                    </a>
+                    <a href="{{ route('web.agenda.index') }}"
+                       class="nav-link flex items-center space-x-2">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="{{ route('web.galery.index') }}"
+                       class="nav-link flex items-center space-x-2">
+                        <i class="fas fa-images"></i>
+                        <span>Galeri</span>
+                    </a>
+
+                    <!-- Auth Buttons/Menu -->
+                    @auth
+                        <div class="relative group">
+                            <button class="profile-button flex items-center space-x-2">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ asset(auth()->user()->avatar) }}"
+                                         alt="Profile"
+                                         class="w-8 h-8 rounded-full border-2 border-white object-cover">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
+                                         alt="Profile"
+                                         class="w-8 h-8 rounded-full border-2 border-white">
+                                @endif
+                                <span>{{ auth()->user()->name }}</span>
+                                <i class="fas fa-chevron-down text-sm group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="dropdown-menu absolute right-0 mt-2 w-48 py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                @if(auth()->user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard.index') }}"
+                                       class="dropdown-item flex items-center px-4 py-2">
+                                        <i class="fas fa-tachometer-alt mr-2"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('web.profile') }}"
+                                       class="dropdown-item flex items-center px-4 py-2">
+                                        <i class="fas fa-user-circle mr-2"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                @endif
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                            class="dropdown-item flex items-center w-full px-4 py-2">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="auth-button">
+                            Login
+                        </a>
+                    @endauth
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-white hover:text-blue-200 transition-colors duration-300">
+                    <i class="fas fa-bars text-2xl"></i>
                 </button>
-            </form>
-
-            <div class="flex items-center space-x-6">
-                <a href="{{ route('web.informasi.index') }}" class="text-white flex items-center space-x-1">
-                    <i class="fas fa-info-circle"></i><span>Informasi</span>
-                </a>
-                <a href="{{ route('web.informasi.index') }}" class="text-white flex items-center space-x-1">
-                    <i class="fas fa-calendar-alt"></i><span>Agenda</span>
-                </a>
-                <a href="{{ route('web.galery.index') }}" class="text-white flex items-center space-x-1">
-                    <i class="fas fa-images"></i><span>Galeri</span>
-                </a>
-            </div>
-
-            <div>
-                <a href="{{ route('login') }}" class="bg-blue-500 text-white px-3 py-1 rounded ml-2">Login</a>
             </div>
         </div>
     </nav>
@@ -234,9 +635,14 @@
                                     <span id="likeCount-{{ $photo->id }}">{{ $photo->likes_count }}</span>
                                 </button>
                             @else
-                                <a href="{{ route('login') }}" class="text-blue-500 hover:underline">
-                                    Login untuk menyukai foto
-                                </a>
+                                <div class="login-message">
+                                    <i class="fas fa-heart text-4xl text-red-500 mb-4"></i>
+                                    <p class="text-gray-600 mb-4">Ingin menyukai foto ini? Silakan login terlebih dahulu</p>
+                                    <a href="{{ route('login') }}" class="login-button">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        <span>Login Sekarang</span>
+                                    </a>
+                                </div>
                             @endauth
                         </div>
 
@@ -262,9 +668,14 @@
                                     </form>
                                 @endif
                             @else
-                                <p class="text-gray-600 mb-4">
-                                    <a href="{{ route('login') }}" class="text-blue-500 hover:underline">Login</a> untuk memberikan komentar
-                                </p>
+                                <div class="login-message">
+                                    <i class="fas fa-comments text-4xl text-blue-500 mb-4"></i>
+                                    <p class="text-gray-600 mb-4">Bergabunglah dalam diskusi! Login untuk memberikan komentar</p>
+                                    <a href="{{ route('login') }}" class="login-button">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        <span>Login untuk Komentar</span>
+                                    </a>
+                                </div>
                             @endauth
 
                             <!-- Daftar Komentar -->
@@ -399,32 +810,25 @@
                         </div>
 
                         <!-- Share Buttons -->
-                        <div class="flex items-center space-x-4 mt-4">
-                            <span class="text-gray-600">Bagikan:</span>
-                            <!-- Facebook -->
+                        <div class="share-buttons">
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
                                target="_blank"
-                               class="share-button text-blue-600 hover:text-blue-800">
+                               class="share-button share-facebook">
                                 <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
                             </a>
-                            <!-- Instagram -->
-                            <button
-                                onclick="shareToInstagram('{{ $photo->image }}', '{{ $photo->judul ?? 'Photo' }}')"
-                                class="share-button text-pink-600 hover:text-pink-800">
+                            <button onclick="shareToInstagram('{{ $photo->image }}', '{{ $photo->judul ?? 'Photo' }}')"
+                                    class="share-button share-instagram">
                                 <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
                             </button>
+                            <a href="{{ $photo->image }}"
+                               download="{{ $photo->judul ?? 'Photo' }}"
+                               class="share-button bg-gradient-to-r from-green-500 to-green-600 text-white">
+                                <i class="fas fa-download"></i>
+                                <span>Download</span>
+                            </a>
                         </div>
-
-                        <!-- Tags -->
-                        @if($galery->hashtags && $galery->hashtags->count() > 0)
-                        <div class="flex flex-wrap gap-2 mt-4">
-                            @foreach($galery->hashtags as $tag)
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
-                                #{{ $tag->name }}
-                            </span>
-                            @endforeach
-                        </div>
-                        @endif
                     </div>
                 </div>
                 @endforeach
@@ -445,12 +849,51 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8">
+    <footer class="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-8">
         <div class="container mx-auto text-center">
             <div class="mb-4">
-                <img src="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" alt="Logo SMKN 4 Bogor" class="h-16 mx-auto">
+                  <img src="{{ asset('assets/images/logo/logo.png') }}"
+                     alt="Logo SMKN 4 Bogor"
+                     class="h-12 mx-auto">
             </div>
-            <p class="text-lg">&copy; 2024 SMK Negeri 4 Bogor. Semua hak cipta dilindungi.</p>
+            <p class="text-sm mb-2">
+                SMKN 4 Bogor, Jl. Raya Tajur, Kp. Buntar RT.02/RW.08, Kel. Muara Sari,
+                Kec. Bogor Selatan, Kota Bogor, Jawa Barat 16137
+            </p>
+            <p class="text-sm">© 2024 SMKN 4 Bogor. All rights reserved.</p>
+
+            <!-- Media Sosial dan Email -->
+            <div class="flex justify-center space-x-6 mt-6">
+                <a href="https://web.facebook.com/people/SMK-NEGERI-4-KOTA-BOGOR/100054636630766/"
+                   class="text-gray-400 hover:text-blue-600"
+                   aria-label="Facebook"
+                   target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/smkn4kotabogor/"
+                   class="text-gray-400 hover:text-pink-500"
+                   aria-label="Instagram"
+                   target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://twitter.com"
+                   class="text-gray-400 hover:text-blue-400"
+                   aria-label="Twitter"
+                   target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.youtube.com/@smknegeri4bogor905"
+                   class="text-gray-400 hover:text-red-500"
+                   aria-label="YouTube"
+                   target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="mailto:smkn4@smkn4bogor.sch.id"
+                   class="text-gray-400 hover:text-yellow-400"
+                   aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
         </div>
     </footer>
 

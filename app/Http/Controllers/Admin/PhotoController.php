@@ -58,7 +58,7 @@ class PhotoController extends Controller
             'judul' => $request->judul,
             'user_id' => auth()->user()->id, // Mengaitkan dengan pengguna yang sedang login
         ]);
-
+$photo->save();
         return $photo
             ? redirect()->route('admin.photo.index')->with(['success' => 'Foto Berhasil Disimpan!'])
             : redirect()->route('admin.photo.index')->with(['error' => 'Foto Gagal Disimpan!']);

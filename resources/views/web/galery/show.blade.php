@@ -1,106 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Galery - {{ $galery->judul }}</title>
+    <link rel="shortcut icon" type="image/jpg"  href="{{ asset('assets/images/logo/logo.png') }}" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $jurusan->nama }} - Detail Jurusan</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+        }
+    </style>
 </head>
+<body class="bg-gray-100">
+    <!-- Hero Section -->
+    <div class="relative bg-blue-900 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4" data-aos="fade-up">{{ $jurusan->nama }}</h1>
 
-<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
+            <!-- Display the first image from the gallery -->
+            @if($jurusan->photos->isNotEmpty())
+                <img src="{{ $jurusan->photos->first()->image }}" alt="{{ $jurusan->nama }}" class="w-full h-auto object-cover rounded-lg mb-4">
+            @else
+                <p class="text-red-500">Tidak ada foto untuk jurusan ini.</p>
+            @endif
 
+            <p class="text-xl text-blue-100 mb-8" data-aos="fade-up" data-aos-delay="100">
+                {{ $jurusan->deskripsi }}
+            </p>
 
-   <!-- Navbar -->
-<nav class="bg-gray-800 p-4 sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center">
-            <img src="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" alt="Logo SMKN 4 Bogor" class="h-10 mr-2">
-            <a href="#" class="text-white font-bold text-lg">SMK INDONESIA DIGITAL</a>
-        </div>
-
-        <!-- Form Pencarian dengan Tailwind CSS -->
-        <form id="search-form" action="{{ route('search') }}" method="GET" class="flex items-center bg-gray-700 rounded-lg overflow-hidden">
-            <input type="text" name="query" placeholder="Cari..." class="bg-transparent text-white px-4 py-1 outline-none" required>
-            <button type="submit" class="text-white px-3 hover:bg-gray-600 transition duration-300">
-                <i class="fas fa-search"></i>
-            </button>
-        </form>
-
-        <div class="flex items-center space-x-6">
-            <a href="{{ route('web.informasi.index') }}" class="text-white flex items-center space-x-1">
-                <i class="fas fa-info-circle"></i>
-                <span>Informasi</span>
-            </a>
-            <a href="{{ route('web.informasi.index') }}" class="text-white flex items-center space-x-1">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Agenda</span>
-            </a>
-            <a href="{{ route('web.galery.index') }}" class="text-white flex items-center space-x-1">
-                <i class="fas fa-images"></i>
-                <span>Galeri</span>
-            </a>
-        </div>
-
-        <div>
-            <a href="{{ route('login') }}" class="bg-blue-500 text-white px-3 py-1 rounded ml-2">Login</a>
+            <!-- Back Button -->
+            <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
+                <a href="{{ route('welcome') }}"
+                   class="inline-flex items-center px-6 py-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-all duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span>Kembali ke Beranda</span>
+                </a>
+            </div>
         </div>
     </div>
-</nav>
 
-
-
-    <!-- Konten Utama -->
-    <div class="container mx-auto my-8 flex-grow">
-        <h1 class="text-3xl font-bold mb-6">{{ $galery->judul }}</h1>
-        <p>{{ $galery->description }}</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            @foreach($galery->photos as $photo)
-            <div class="rounded overflow-hidden shadow-lg">
-                <img class="w-full h-48 object-cover" src="{{ $photo->image }}" alt="Photo">
-            </div>
+    <!-- Gallery Section -->
+    <div class="container mx-auto px-4 py-12">
+        <h2 class="text-2xl font-bold mb-4">Galeri {{ $jurusan->nama }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($jurusan->photos as $photo)
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="{{ $photo->image }}" alt="{{ $photo->judul }}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold">{{ $photo->judul }}</h3>
+                        <p class="text-gray-600">{{ Str::limit($photo->deskripsi, 100) }}</p>
+                    </div>
+                </div>
             @endforeach
         </div>
-        <button onclick="window.history.back()" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">Back to Gallery</button>
     </div>
-
-    <!-- Footer -->
-<footer class="bg-gray-800 text-white py-8">
-    <div class="container mx-auto text-center">
-        <div class="mb-4">
-            <img src="https://smkn4bogor.sch.id/assets/images/logo/logoSMKN4.svg" alt="Logo SMKN 4 Bogor" class="h-12 mx-auto">
-        </div>
-        <p class="text-sm mb-2">
-            SMKN 4 Bogor, Jl. Raya Tajur, Kp. Buntar RT.02/RW.08, Kel. Muara Sari, Kec. Bogor Selatan, Kota Bogor, Jawa Barat 16137
-        </p>
-        <p class="text-sm">
-            © 2024 SMKN 4 Bogor. All rights reserved.
-        </p>
-
-        <!-- Media Sosial dan Email -->
-        <div class="flex justify-center space-x-6 mt-6">
-            <a href="https://web.facebook.com/people/SMK-NEGERI-4-KOTA-BOGOR/100054636630766/" class="text-gray-400 hover:text-blue-600" aria-label="Facebook" target="_blank">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://www.instagram.com/smkn4kotabogor/" class="text-gray-400 hover:text-pink-500" aria-label="Instagram" target="_blank">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://twitter.com" class="text-gray-400 hover:text-blue-400" aria-label="Twitter" target="_blank">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://www.youtube.com/@smknegeri4bogor905" class="text-gray-400 hover:text-red-500" aria-label="YouTube" target="_blank">
-                <i class="fab fa-youtube"></i>
-            </a>
-            <a href="mailto:smkn4@smkn4bogor.sch.id" class="text-gray-400 hover:text-yellow-400" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
-        </div>
-    </div>
-</footer>
-
-<!-- Font Awesome untuk Ikon -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
 </body>
-
 </html>

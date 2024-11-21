@@ -15,7 +15,9 @@ class Galery extends Model
         'tanggal',
         'status',
         'kategori_id',
-        'users_id'
+        'users_id',
+        'jurusan_id'
+
     ];
 
     protected $casts = [
@@ -25,7 +27,7 @@ class Galery extends Model
 
     public function photos()
     {
-        return $this->hasMany(Photo::class, 'galery_id');
+        return $this->hasMany(Photo::class);
     }
 
     public function kategori()
@@ -38,8 +40,5 @@ class Galery extends Model
         return $this->belongsTo(User::class, 'users_id');
     }
 
-    public function hashtags()
-    {
-        return $this->belongsToMany(Hashtag::class, 'galery_hashtag');
-    }
+
 }

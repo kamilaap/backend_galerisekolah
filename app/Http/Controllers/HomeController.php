@@ -6,6 +6,7 @@ use App\Models\Galery;
 use App\Models\Informasi;
 use App\Models\Slider;
 use App\Models\Photo;
+use App\Models\Jurusan;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -20,15 +21,20 @@ class HomeController extends Controller
         $title = "Selamat Datang di Web Galeri Sekolah";
         $sliders = Slider::all(); // Atau query sesuai dengan kebutuhan Anda
 
+     // Ambil semua jurusan
+     $jurusan = Jurusan::all();
+
+     // Ambil semua foto dari galeri yang sesuai dengan galery_id jurusan
+     $jurusanPhotos = Photo::where('galery_id', 2)->get(); // Mengambil foto berdasarkan galery_id yang sesuai
+
+     // Mengambil 3 foto terbaru dengan jumlah views, likes, dan comments
+     $latestPhotos = Photo::withCount(['likes', 'views', 'comments'])->latest()->take(3)->get();
+
+     $galeries = Galery::all(); // Ambil semua galeri
 
 
-        // Mengambil 3 foto terbaru dengan jumlah views dan komentar
-        $photos = Photo::withCount(['likes', 'views', 'comments'])->latest()->take(3)->get();
 
-        $galeries = Galery::all(); // Ambil semua galeri
-
-
-        return view('welcome', compact('sliders', 'agenda', 'photos', 'informasi', 'galeries'));
+     return view('welcome', compact('sliders', 'agenda', 'jurusanPhotos', 'informasi', 'galeries', 'jurusan', 'latestPhotos'));
     }
 
     public function showGalleryPhotos($id)
@@ -55,6 +61,8 @@ class HomeController extends Controller
         return view('web.informasi.index', compact('informasi'));
     }
 
+
+
     public function fullGallery()
     {
         // Ambil semua galeri dengan foto terkait
@@ -63,8 +71,9 @@ class HomeController extends Controller
     }
     public function fullAgenda()
     {
-        // Ambil semua galeri dengan foto terkait
-        $agenda = Agenda::all();
+        // Ambil semua agenda yang tersedia
+        $agenda = Agenda::orderBy('tanggal', 'desc')->get();
+
         return view('web.agenda.index', compact('agenda'));
     }
     // Menampilkan detail agenda
@@ -79,6 +88,11 @@ class HomeController extends Controller
     {
         $informasi = Informasi::find($id);
         return view('web.informasi.show', compact('informasi'));
+    }
+    public function showJurusan($id)
+    {
+        $jurusan = Jurusan::find($id);
+        return view('web.jurusan.show', compact('jurusan'));
     }
     public function downloadPhoto($id)
     {
@@ -132,4 +146,9 @@ class HomeController extends Controller
         }
     }
 
+    public function showByDate($date)
+    {
+        $agendas = Agenda::whereDate('tanggal', $date)->get();
+        return view('web.agenda.show-by-date', compact('agendas', 'date'));
+    }
 }

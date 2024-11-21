@@ -23,7 +23,12 @@ use App\Http\Controllers\Admin\PhotoInteractionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\LikesController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\JurusanController;
 
+
+Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 // Middleware
 use App\Http\Middleware\PreventBackHistory;
 
@@ -33,7 +38,6 @@ use App\Http\Middleware\PreventBackHistory;
 |--------------------------------------------------------------------------
 */
 
-// Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
 Route::get('/full-informasi', [HomeController::class, 'fullInformasi'])->name('web.informasi.index');
 Route::get('/full-gallery', [HomeController::class, 'fullGallery'])->name('web.galery.index');
@@ -41,8 +45,10 @@ Route::get('/full-agenda', [HomeController::class, 'fullAgenda'])->name('web.age
 Route::get('/galery/{id}/photos', [HomeController::class, 'showGalleryPhotos'])->name('web.galery.photo');
 Route::get('/galery/{id}', [GaleryController::class, 'show'])->name('web.galery.show');
 Route::get('/agenda/{id}', [AgendaController::class, 'show'])->name('web.agenda.show');
-Route::get('/informasi/{id}', [InformasiController::class, 'show'])->name('web.informasi.show');
-Route::get('/search', [SearchController::class, 'searchByTag'])->name('search');
+Route::get('/jurusan/{id}', [JurusanController::class, 'show'])->name('web.jurusan.show');Route::get('/informasi/{id}', [InformasiController::class, 'show'])->name('web.informasi.show');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::get('/agenda/date/{date}', [HomeController::class, 'showByDate'])->name('web.agenda.by-date');
+
 
 // Download Routes
 Route::get('download-photo/{id}', [HomeController::class, 'downloadPhoto'])->name('download.photo');
@@ -75,6 +81,7 @@ Route::prefix('admin')->middleware(['auth', 'admin', PreventBackHistory::class])
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
 
     // Resource Routes
+    Route::resource('jurusan', JurusanController::class, ['as' => 'admin']);
     Route::resource('/kategori', KategoriController::class, ['as' => 'admin']);
     Route::resource('/informasi', InformasiController::class, ['as' => 'admin']);
     Route::resource('/agenda', AgendaController::class, ['as' => 'admin']);

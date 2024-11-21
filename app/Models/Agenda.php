@@ -44,7 +44,7 @@ class Agenda extends Model
     ];
 
     /**
-     * Casting untuk format tanggal
+     * Casting untuk format atribut.
      *
      * @var array
      */
@@ -55,7 +55,7 @@ class Agenda extends Model
     ];
 
     /**
-     * Relasi: Informasi belongs to a kategori and a user.
+     * Relasi: Agenda belongs to a kategori and a user.
      */
     public function kategori()
     {
@@ -71,7 +71,9 @@ class Agenda extends Model
     }
 
     /**
-     * Mutator untuk memastikan tanggal selalu dalam format Carbon
+     * Mutator untuk memastikan tanggal selalu dalam format Carbon.
+     *
+     * @param string $value
      */
     public function setTanggalAttribute($value)
     {
@@ -79,7 +81,10 @@ class Agenda extends Model
     }
 
     /**
-     * Accessor untuk mendapatkan tanggal dalam format Carbon
+     * Accessor untuk mendapatkan tanggal dalam format Carbon.
+     *
+     * @param string $value
+     * @return \Carbon\Carbon
      */
     public function getTanggalAttribute($value)
     {
@@ -87,15 +92,13 @@ class Agenda extends Model
     }
 
     /**
-     * Accessor untuk format tanggal post agenda
+     * Accessor untuk format tanggal post agenda.
+     *
+     * @param string $value
+     * @return string
      */
     public function getTanggalPostAgendaAttribute($value)
     {
-        return date('d-m-Y', strtotime($value));
-    }
-
-    public function hashtags()
-    {
-        return $this->belongsToMany(Hashtag::class, 'agenda_hashtag');
+        return Carbon::parse($value)->format('d-m-Y');
     }
 }
