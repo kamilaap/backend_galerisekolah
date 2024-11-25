@@ -12,11 +12,16 @@ class BaseController extends Controller
      */
     public function sendResponse($result, $message): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => true,
             'data'    => $result,
             'message' => $message,
-        ], 200);
+        ];
+
+        return response()->json($response, 200)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, X-Token-Auth, Authorization');
     }
 
     /**

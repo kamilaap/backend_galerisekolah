@@ -7,9 +7,33 @@
         <div class="mb-8">
             <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white">
                 <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}"
-                         alt="Profile"
-                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg">
+                    <div class="relative group">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ auth()->user()->avatar }}"
+                                 alt="Profile"
+                                 class="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
+                                 id="avatarImage">
+                        @else
+                            <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center text-blue-600 text-3xl font-bold border-4 border-white shadow-lg"
+                                 id="avatarPlaceholder">
+                                {{ substr(auth()->user()->name, 0, 1) }}
+                            </div>
+                        @endif
+
+                        <!-- Overlay for hover effect -->
+                        <div class="absolute inset-0 rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <label for="avatarInput" class="cursor-pointer">
+                                <i class="fas fa-camera text-white text-2xl"></i>
+                            </label>
+                        </div>
+
+                        <!-- Hidden file input -->
+                        <input type="file" 
+                               id="avatarInput" 
+                               class="hidden" 
+                               accept="image/*"
+                               onchange="updateAvatar(this)">
+                    </div>
                     <div>
                         <h1 class="text-3xl font-bold">{{ auth()->user()->name }}</h1>
                         <p class="text-blue-100">Administrator</p>

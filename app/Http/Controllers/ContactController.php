@@ -9,14 +9,23 @@ class ContactController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|max:255',
             'message' => 'required|string'
         ]);
 
-        Contact::create($validated);
+        Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'message' => $request->message
+        ]);
 
         return redirect()->back()->with('success', 'Pesan berhasil dikirim!');
+    }
+
+    public function submit(Request $request)
+    {
+        return $this->store($request);
     }
 }

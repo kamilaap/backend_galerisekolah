@@ -8,27 +8,18 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Buat admin
         User::create([
-            'name' => 'Admin',
+            'name' => 'Administrator',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'admin'
         ]);
 
-        // Buat beberapa user biasa
         User::create([
-            'name' => 'User 1',
-            'email' => 'user1@gmail.com',
-            'password' => Hash::make('password'),
-            'role' => 'user'
-        ]);
-
-        User::create([
-            'name' => 'User 2',
-            'email' => 'user2@gmail.com',
+            'name' => 'User',
+            'email' => 'user@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'user'
         ]);

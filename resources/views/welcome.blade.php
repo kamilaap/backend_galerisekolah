@@ -585,53 +585,69 @@
         }
 
         /* Auth button styling */
-        .auth-button {
-            background: #3b82f6;
-            color: white;
-            font-weight: 600;
-            padding: 0.625rem 1.5rem;
-            border-radius: 9999px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
-        }
-
-        .auth-button:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.6);
-        }
-
-        /* Profile button styling */
         .profile-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-        }
+    transition: all 0.3s ease;
+}
 
-        .profile-button:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+.profile-button:hover {
+    transform: translateY(-2px);
+}
 
-        /* Dropdown menu styling */
-        .dropdown-menu {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
+.dropdown-menu {
+    z-index: 50;
+    min-width: 200px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
 
-        .dropdown-item {
-            color: #1e40af;
-            transition: all 0.2s ease;
-        }
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        width: 100%;
+        max-width: 300px;
+    }
+}
 
-        .dropdown-item:hover {
-            background: #eff6ff;
-            color: #2563eb;
-        }
+/* Auth button styling */
+.auth-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
 
+.auth-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+}
+
+.auth-button:hover::after {
+    transform: translateX(100%);
+    transition: transform 0.6s ease;
+}
+
+/* Dropdown styling */
+.dropdown-menu {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-menu a:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.dropdown-menu button:last-child {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+}
         /* Logo section styling */
         .logo-text {
             color: #f0f9ff;
@@ -851,52 +867,59 @@
                     </a>
 
                     <!-- Auth Buttons/Menu -->
-                    @auth
-                        <div class="relative group">
-                            <button class="profile-button flex items-center space-x-2">
-                                @if(auth()->user()->avatar)
-                                    <img src="{{ asset(auth()->user()->avatar) }}"
-                                         alt="Profile"
-                                         class="w-8 h-8 rounded-full border-2 border-white object-cover">
-                                @else
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
-                                         alt="Profile"
-                                         class="w-8 h-8 rounded-full border-2 border-white">
-                                @endif
-                                <span>{{ auth()->user()->name }}</span>
-                                <i class="fas fa-chevron-down text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div class="dropdown-menu absolute right-0 mt-2 w-48 py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                @if(auth()->user()->role === 'admin')
-                                    <a href="{{ route('admin.dashboard.index') }}"
-                                       class="dropdown-item flex items-center px-4 py-2">
-                                        <i class="fas fa-tachometer-alt mr-2"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                @else
-                                    <a href="{{ route('web.profile') }}"
-                                       class="dropdown-item flex items-center px-4 py-2">
-                                        <i class="fas fa-user-circle mr-2"></i>
-                                        <span>Profile</span>
-                                    </a>
-                                @endif
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                            class="dropdown-item flex items-center w-full px-4 py-2">
-                                        <i class="fas fa-sign-out-alt mr-2"></i>
-                                        <span>Logout</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    @else
-                        <a href="{{ route('login') }}"
-                           class="auth-button">
-                            Login
-                        </a>
-                    @endauth
+                  <!-- Auth Buttons/Menu -->
+@auth
+    <div class="relative group">
+        <button class="profile-button flex items-center space-x-2">
+            @if(auth()->user()->avatar)
+                <img src="{{ asset(auth()->user()->avatar) }}"
+                     alt="Profile"
+                     class="w-8 h-8 rounded-full border-2 border-white object-cover">
+            @else
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white border-2 border-white">
+                    {{ substr(auth()->user()->name, 0, 1) }}
+                </div>
+            @endif
+            <span class="text-white">{{ auth()->user()->name }}</span>
+            <i class="fas fa-chevron-down text-sm text-white group-hover:rotate-180 transition-transform duration-300"></i>
+        </button>
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu absolute right-0 mt-2 w-48 py-2 bg-white rounded-lg shadow-xl invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+            @if(auth()->user()->role === 'admin')
+                <a href="{{ route('admin.dashboard.index') }}"
+                   class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition-colors duration-300">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    <span>Dashboard</span>
+                </a>
+            @else
+                <a href="{{ route('web.profile') }}"
+                   class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition-colors duration-300">
+                    <i class="fas fa-user-circle mr-2"></i>
+                    <span>Profile</span>
+                </a>
+            @endif
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                        class="w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-50 transition-colors duration-300">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </div>
+@else
+    <div class="flex items-center space-x-4">
+        <a href="{{ route('login') }}"
+           class="px-6 py-2 text-white hover:text-blue-200 transition-colors duration-300">
+            Login
+        </a>
+        <a href="{{ route('register') }}"
+           class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl">
+            Register
+        </a>
+    </div>
+@endauth
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -916,10 +939,10 @@
         <div class="absolute inset-0 flex items-center justify-center z-20">
             <div data-aos="fade-up" data-aos-duration="1000">
                 <h1 class="text-5xl font-bold text-white text-center mb-4">
-                    Selamat Datang Di Edu Galery
+                    {{ $profil->welcome_title ?? 'Selamat Datang Di Edu Galery' }}
                 </h1>
                 <p class="text-xl text-white/90 text-center">
-                    Membangun Generasi Digital yang Unggul dan Berkarakter
+                    {{ $profil->welcome_subtitle ?? 'Membangun Generasi Digital yang Unggul dan Berkarakter' }}
                 </p>
             </div>
         </div>
@@ -933,9 +956,7 @@
                 </div>
                 @endforeach
             </div>
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+            
         </div>
     </section>
 
@@ -1000,7 +1021,7 @@
             <h2 class="text-4xl font-bold mb-4 gradient-text">Profil Sekolah</h2>
             <p class="text-lg text-gray-600">
                 <i class="fas fa-school text-blue-600"></i>
-                SMKN 4 Bogor merupakan sekolah kejuruan berbasis Teknologi Informasi dan Komunikasi. Sekolah ini didirikan dan dirintis pada tahun 2008 kemudian dibuka pada tahun 2009 yang saat ini terakreditasi A.
+                {{ $profil->deskripsi ?? 'SMKN 4 Bogor merupakan sekolah kejuruan berbasis Teknologi Informasi dan Komunikasi.' }}
             </p>
         </div>
 
@@ -1010,42 +1031,33 @@
                 <h3 class="text-2xl font-bold mb-6 text-blue-800">Visi:</h3>
                 <p class="vision mb-8 text-gray-700 leading-relaxed">
                     <i class="fas fa-bullseye text-blue-500 mr-2"></i>
-                    Terwujudnya SMK Pusat Keunggulan melalui terciptanya pelajar pancasila yang berbasis teknologi, berwawasan lingkungan dan berkewirausahaan.
+                    {{ $profil->visi ?? 'Visi belum diatur' }}
                 </p>
 
                 <h3 class="text-2xl font-bold mb-6 text-blue-800">Misi:</h3>
-                <ul class="mission space-y-4">
-                    <li class="flex items-start space-x-3 text-gray-700">
-                        <i class="fas fa-check-circle text-blue-500 mt-1"></i>
-                        <span>Mewujudkan karakter pelajar pancasila beriman dan bertaqwa kepada Tuhan Yang Maha Esa dan berakhlak mulia.</span>
-                    </li>
-                    <li class="flex items-start space-x-3 text-gray-700">
-                        <i class="fas fa-check-circle text-blue-500 mt-1"></i>
-                        <span>Mengembangkan pembelajaran dan pengelolaan sekolah berbasis Teknologi Informasi dan Komunikasi.</span>
-                    </li>
-                    <li class="flex items-start space-x-3 text-gray-700">
-                        <i class="fas fa-check-circle text-blue-500 mt-1"></i>
-                        <span>Mengembangkan sekolah yang berwawasan Adiwiyata Mandiri.</span>
-                    </li>
-                    <li class="flex items-start space-x-3 text-gray-700">
-                        <i class="fas fa-check-circle text-blue-500 mt-1"></i>
-                        <span>Mengembangkan usaha dalam berbagai bidang secara optimal sehingga memiliki kemandirian dan daya saing tinggi.</span>
-                    </li>
-                </ul>
+                <div class="mission space-y-4">
+                    {!! $profil->misi ?? 'Misi belum diatur' !!}
+                </div>
             </div>
 
             <!-- Video Profile -->
             <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
                 <h3 class="text-2xl font-bold mb-6 text-blue-800">Video Profile</h3>
                 <div class="aspect-w-16 rounded-lg overflow-hidden shadow-lg">
-                    <iframe
-                        src="https://www.youtube.com/embed/UmFTAcr6lAc"
-                        title="Video Tentang SMKN 4"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                        class="w-full h-full"
-                    ></iframe>
+                    @if($profil && $profil->video_url)
+                        <iframe
+                            src="{{ $profil->video_url }}"
+                            title="Video Profile SMKN 4"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            class="w-full h-full">
+                        </iframe>
+                    @else
+                        <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                            <p class="text-gray-500">Video belum tersedia</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

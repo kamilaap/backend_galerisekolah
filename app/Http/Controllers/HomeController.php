@@ -7,6 +7,7 @@ use App\Models\Informasi;
 use App\Models\Slider;
 use App\Models\Photo;
 use App\Models\Jurusan;
+use App\Models\ProfilSekolah;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,22 +20,25 @@ class HomeController extends Controller
         $agenda = Agenda::orderBy('tanggal', 'desc')->take(5)->get();
         $informasi = Informasi::all();
         $title = "Selamat Datang di Web Galeri Sekolah";
-        $sliders = Slider::all(); // Atau query sesuai dengan kebutuhan Anda
+        $sliders = Slider::all();
+        $jurusan = Jurusan::all();
+        $jurusanPhotos = Photo::where('galery_id', 2)->get();
+        $latestPhotos = Photo::withCount(['likes', 'views', 'comments'])->latest()->take(3)->get();
+        $galeries = Galery::all();
 
-     // Ambil semua jurusan
-     $jurusan = Jurusan::all();
+        $profil = ProfilSekolah::first();
 
-     // Ambil semua foto dari galeri yang sesuai dengan galery_id jurusan
-     $jurusanPhotos = Photo::where('galery_id', 2)->get(); // Mengambil foto berdasarkan galery_id yang sesuai
-
-     // Mengambil 3 foto terbaru dengan jumlah views, likes, dan comments
-     $latestPhotos = Photo::withCount(['likes', 'views', 'comments'])->latest()->take(3)->get();
-
-     $galeries = Galery::all(); // Ambil semua galeri
-
-
-
-     return view('welcome', compact('sliders', 'agenda', 'jurusanPhotos', 'informasi', 'galeries', 'jurusan', 'latestPhotos'));
+        return view('welcome', compact(
+            'sliders',
+            'agenda',
+            'jurusanPhotos',
+            'informasi',
+            'galeries',
+            'jurusan',
+            'latestPhotos',
+            'profil',
+            'title'
+        ));
     }
 
     public function showGalleryPhotos($id)
@@ -150,5 +154,34 @@ class HomeController extends Controller
     {
         $agendas = Agenda::whereDate('tanggal', $date)->get();
         return view('web.agenda.show-by-date', compact('agendas', 'date'));
+    }
+
+    public function getPhotoDetail($id)
+    {
+        try {
+            $photo = Photo::with(['comments.user', 'likes', 'views'])->findOrFail($id);
+
+            // Tambahkan view baru
+            $photo->views()->create();
+
+            return view('components.photo-detail-modal', compact('photo'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Foto tidak ditemukan'], 404);
+        }
+    }
+
+    public function showGalleryPhoto($id)
+    {
+        try {
+            $photo = Photo::with(['comments.user', 'likes', 'views', 'galery'])->findOrFail($id);
+            $galery = $photo->galery;
+
+            // Tambah view
+            $photo->views()->create();
+
+            return view('web.galery.photo', compact('photo', 'galery'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Foto tidak ditemukan');
+        }
     }
 }

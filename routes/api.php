@@ -74,3 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route untuk user biasa
     Route::get('/profile', 'ProfileController@show');
 });
+
+Route::middleware(['cors'])->group(function () {
+    // API routes
+    Route::get('/informasi', [InformasiController::class, 'index']);
+    Route::get('/sliders', [SliderController::class, 'index']);
+    Route::get('/agenda', [AgendaController::class, 'index']);
+    Route::get('/galery', [GaleryController::class, 'index']);
+});

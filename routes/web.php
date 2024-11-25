@@ -25,10 +25,15 @@ use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\LikesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\Admin\ProfilSekolahController;
+use App\Http\Controllers\Auth\RegisterController;
 
+// Auth Routes
+Route::middleware(['guest'])->group(function () {
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
+});
 
-Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 // Middleware
 use App\Http\Middleware\PreventBackHistory;
 
@@ -48,6 +53,7 @@ Route::get('/agenda/{id}', [AgendaController::class, 'show'])->name('web.agenda.
 Route::get('/jurusan/{id}', [JurusanController::class, 'show'])->name('web.jurusan.show');Route::get('/informasi/{id}', [InformasiController::class, 'show'])->name('web.informasi.show');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/agenda/date/{date}', [HomeController::class, 'showByDate'])->name('web.agenda.by-date');
+Route::get('/galery/photo/{id}', [HomeController::class, 'showGalleryPhoto'])->name('web.galery.photo');
 
 
 // Download Routes
@@ -56,13 +62,10 @@ Route::get('download-informasi-photo/{id}', [HomeController::class, 'downloadInf
 
 // Authenticated User Routes
 Route::middleware(['auth'])->group(function () {
-    // Profile Routes
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [WebProfileController::class, 'index'])->name('web.profile');
-        Route::get('/edit', [WebProfileController::class, 'edit'])->name('web.profile.edit');
-        Route::post('/update', [WebProfileController::class, 'update'])->name('web.profile.update');
-        Route::delete('/destroy', [WebProfileController::class, 'destroy'])->name('web.profile.destroy');
-    });
+    Route::get('/profile', [WebProfileController::class, 'index'])->name('web.profile');
+    Route::put('/profile/update', [WebProfileController::class, 'update'])->name('web.profile.update');
+    Route::post('/profile/update-avatar', [WebProfileController::class, 'updateAvatar'])->name('web.profile.updateAvatar');
+    Route::put('/profile/password', [WebProfileController::class, 'updatePassword'])->name('web.profile.password');
 
     // Comment Routes
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -76,7 +79,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Admin Routes
-Route::prefix('admin')->middleware(['auth', 'admin', PreventBackHistory::class])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
 
@@ -115,6 +118,14 @@ Route::prefix('admin')->middleware(['auth', 'admin', PreventBackHistory::class])
     // Admin Replies
     Route::post('/reply', [AdminReplyController::class, 'store'])->name('admin.reply.store');
     Route::delete('/reply/{reply}', [AdminReplyController::class, 'destroy'])->name('admin.reply.destroy');
+
+    // Routes untuk Profil Sekolah
+    Route::get('/profil-sekolah', [ProfilSekolahController::class, 'index'])
+        ->name('admin.profil-sekolah.index');
+    Route::get('/profil-sekolah/edit', [ProfilSekolahController::class, 'edit'])
+        ->name('admin.profil-sekolah.edit');
+    Route::put('/profil-sekolah', [ProfilSekolahController::class, 'update'])
+        ->name('admin.profil-sekolah.update');
 });
 
 // Storage Routes
@@ -142,3 +153,9 @@ Route::get('storage/{informasi}', function ($informasi) {
         'Access-Control-Allow-Origin' => '*'
     ]);
 });
+
+Route::get('/photo/{id}/detail', [HomeController::class, 'getPhotoDetail'])->name('photo.detail');
+
+// Contact Routes
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');

@@ -40,20 +40,22 @@ js" defer></script>
             display: flex;
             align-items: center;
             padding: 0.75rem 1.5rem;
-            color: #e2e8f0;
+            color: #e2e8f0 !important;
             border-radius: 0.5rem;
             margin: 0.25rem 0.75rem;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .sidebar-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
+            color: white !important;
         }
 
         .sidebar-link.active {
             background-color: rgba(255, 255, 255, 0.2);
-            color: white;
+            color: white !important;
             font-weight: 600;
         }
 
@@ -61,6 +63,7 @@ js" defer></script>
             width: 1.5rem;
             height: 1.5rem;
             margin-right: 0.75rem;
+            color: inherit;
         }
 
         /* Header Styles */
@@ -117,7 +120,37 @@ js" defer></script>
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Pastikan border juga konsisten */
+        .border-t {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Perbaiki style untuk memastikan warna konsisten */
+        .sidebar-link,
+        .sidebar-link span,
+        .sidebar-link i {
+            color: #e2e8f0 !important;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link:hover span,
+        .sidebar-link:hover i {
+            color: white !important;
+        }
+
+        .sidebar-link.active,
+        .sidebar-link.active span,
+        .sidebar-link.active i {
+            color: white !important;
+        }
+
+        /* Perbaiki border */
+        .border-t.border-blue-700 {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
     </style>
+    @stack('styles')
 </head>
 
 <body>
@@ -130,9 +163,9 @@ js" defer></script>
             <div class="flex items-center justify-center p-6 border-b border-blue-700">
                 <img src="{{ asset('assets/images/logo/logo.png') }}"
                      class="h-10 w-auto"
-                     alt="Logo SMKN 4 Bogor">
+                     alt="Logo ">
                 <div class="ml-3">
-                    <h1 class="text-white font-bold text-lg">SMKN 4 BOGOR</h1>
+                    <h1 class="text-white font-bold text-lg">Edu Galery</h1>
                     <p class="text-blue-200 text-xs">Admin Dashboard</p>
                 </div>
             </div>
@@ -143,6 +176,12 @@ js" defer></script>
                    class="sidebar-link {{ Request::is('admin/dashboard*') ? 'active' : '' }}">
                     <i class="fas fa-home nav-icon"></i>
                     <span>Dashboard</span>
+                </a>
+
+                <a href="{{ route('admin.profil-sekolah.index') }}"
+                   class="sidebar-link {{ Request::is('admin/profil-sekolah*') ? 'active' : '' }}">
+                    <i class="fas fa-school nav-icon"></i>
+                    <span>Profil Sekolah</span>
                 </a>
 
                 <a href="{{ route('admin.kategori.index') }}"
@@ -208,7 +247,8 @@ js" defer></script>
                 <div class="border-t border-blue-700 my-4"></div>
 
                 <a href="{{ route('admin.profile.index') }}"
-                   class="sidebar-link {{ Request::is('admin/profile*') ? 'active' : '' }}">
+                   class="sidebar-link {{ Request::is('admin/profile*') ? 'active' : '' }}"
+                   style="color: #e2e8f0 !important;">
                     <i class="fas fa-user nav-icon"></i>
                     <span>Profile</span>
                 </a>

@@ -50,31 +50,68 @@ class InformasiController extends Controller
     {
         $this->validate($request, [
             'judul' => 'required',
-            'kategori_id' => 'required',
             'deskripsi' => 'required',
-            'tanggal' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required',
+            'kategori_id' => 'required',
+            'image' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            'status' => 'required'
         ]);
 
-        // Upload image
-        $image = $request->file('image');
-        $imagePath = $image->storeAs('informasi', $image->hashName(), 'public'); // Simpan path gambar
+        try {
+            // Handle file upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
 
-        // Simpan data informasi
-        $informasi = Informasi::create([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'tanggal' => $request->tanggal,
-            'kategori_id' => $request->kategori_id,
-            'status' => $request->status,
-            'users_id' => auth()->user()->id,
-            'image' => $imagePath, // Simpan path gambar
-        ]);
- 
-        return $informasi
-            ? redirect()->route('admin.informasi.index')->with(['success' => 'Data Berhasil Disimpan!'])
-            : redirect()->route('admin.informasi.index')->with(['error' => 'Data Gagal Disimpan!']);
+                // Pastikan folder informasi ada
+                if (!Storage::disk('public')->exists('informasi')) {
+                    Storage::disk('public')->makeDirectory('informasi');
+                }
+
+                // Upload gambar
+                $path = Storage::disk('public')->putFileAs(
+                    'informasi',
+                    $image,
+                    $imageName
+                );
+
+                if (!$path) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Gagal mengupload gambar');
+                }
+            } else {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Gambar harus diupload');
+            }
+
+            // Create informasi dengan users_id dari user yang login
+            $informasi = Informasi::create([
+                'judul' => $request->judul,
+                'deskripsi' => $request->deskripsi,
+                'kategori_id' => $request->kategori_id,
+                'image' => $path,
+                'status' => $request->status,
+                'tanggal' => now(),
+                'users_id' => auth()->id()
+            ]);
+
+            if (!$informasi) {
+                // Hapus gambar jika gagal membuat record
+                Storage::disk('public')->delete($path);
+                throw new \Exception('Gagal menyimpan informasi');
+            }
+
+            return redirect()
+                ->route('admin.informasi.index')
+                ->with('success', 'Data berhasil disimpan');
+
+        } catch (\Exception $e) {
+            \Log::error('Error creating informasi: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

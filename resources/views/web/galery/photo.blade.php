@@ -12,6 +12,7 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
@@ -475,6 +476,64 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
         }
+
+        .shadow-text {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .photo-card {
+            break-inside: avoid;
+        }
+        
+        /* Animasi hover untuk photo card */
+        .photo-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        /* Custom scrollbar */
+        .comment-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .comment-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .comment-section::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .comment-section::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(59, 130, 246, 0.5);
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(59, 130, 246, 0.7);
+        }
+
+        .photo-card {
+            height: fit-content;
+        }
     </style>
 </head>
 
@@ -588,197 +647,209 @@
     </nav>
 
     <main class="container mx-auto px-4 py-8">
-        <!-- Breadcrumb -->
+        <!-- Breadcrumb dengan efek hover yang lebih menarik -->
         <div class="flex items-center space-x-2 mb-6 text-sm" data-aos="fade-right">
-            <a href="{{ route('welcome') }}" class="text-blue-600 hover:text-blue-800">
+            <a href="{{ route('welcome') }}" class="text-blue-600 hover:text-blue-800 transition-all duration-300 hover:scale-105">
                 <i class="fas fa-home"></i> Home
             </a>
             <span class="text-gray-500">/</span>
-            <a href="{{ route('web.galery.index') }}" class="text-blue-600 hover:text-blue-800">Galeri</a>
+            <a href="{{ route('web.galery.index') }}" class="text-blue-600 hover:text-blue-800 transition-all duration-300 hover:scale-105">Galeri</a>
             <span class="text-gray-500">/</span>
             <span class="text-gray-600">{{ $galery->judul }}</span>
         </div>
 
-        <!-- Gallery Header -->
-        <div class="bg-white rounded-xl p-6 mb-8 shadow-lg" data-aos="fade-up">
-            <h1 class="text-3xl font-bold mb-4">{{ $galery->judul }}</h1>
-            <p class="text-gray-600">{{ $galery->deskripsi }}</p>
+        <!-- Gallery Header dengan desain yang lebih menarik -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-8 shadow-lg border border-blue-100" data-aos="fade-up">
+            <h1 class="text-4xl font-bold mb-4 text-gray-800 tracking-tight">{{ $galery->judul }}</h1>
+            <p class="text-gray-600 text-lg leading-relaxed">{{ $galery->deskripsi }}</p>
+            <div class="mt-4 flex items-center space-x-4 text-sm text-gray-500">
+                <span><i class="far fa-calendar-alt mr-2"></i>{{ $galery->created_at->format('d M Y') }}</span>
+                <span><i class="far fa-images mr-2"></i>{{ count($galery->photos) }} Foto</span>
+            </div>
         </div>
 
-        <!-- Photo Grid -->
-        <div class="photo-grid">
+        <!-- Masonry Grid Layout untuk foto dengan ukuran yang lebih konsisten -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-aos="fade-up">
             @if($galery && $galery->photos)
                 @foreach($galery->photos as $photo)
-                <div class="photo-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
-                    <!-- Photo Container -->
-                    <div class="photo-container cursor-pointer" onclick="openFullscreen('{{ $photo->image }}')">
-                        <img src="{{ $photo->image }}" alt="{{ $photo->judul ?? 'Photo' }}" class="transition-transform duration-500">
-                    </div>
+                    <div class="photo-card group bg-white rounded-xl shadow-lg transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl">
+                        <!-- Photo Container dengan aspect ratio yang konsisten -->
+                        <div class="relative overflow-hidden rounded-t-xl" style="aspect-ratio: 4/3;">
+                            <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300 z-10"></div>
+                            <a href="{{ $photo->image }}" 
+                               data-lightbox="gallery-{{ $galery->id }}" 
+                               data-title="{{ $photo->judul ?? 'Photo' }}"
+                               class="cursor-pointer">
+                                <img src="{{ $photo->image }}" 
+                                     alt="{{ $photo->judul ?? 'Photo' }}" 
+                                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                            </a>
+                            <!-- Overlay dengan informasi foto -->
+                            <div class="absolute inset-0 flex flex-col justify-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                                <h3 class="text-white text-xl font-bold mb-2 shadow-text">{{ $photo->judul ?? 'Untitled' }}</h3>
+                                <div class="flex items-center space-x-4 text-white">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-eye mr-2"></i>{{ $photo->views_count }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-heart mr-2"></i>{{ $photo->likes_count }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-comment mr-2"></i>{{ $photo->comments_count }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Photo Info -->
-                    <div class="p-4">
-                        <h3 class="text-xl font-semibold mb-4">{{ $photo->judul ?? 'Untitled' }}</h3>
-
-                        <!-- Like Button -->
-                        <div class="flex items-center space-x-4 mt-4">
+                        <!-- Content Section -->
+                        <div class="p-6 space-y-4">
+                            <!-- Like Button -->
                             @auth
-                                <button
-                                    onclick="toggleLike({{ $photo->id }})"
-                                    id="likeButton-{{ $photo->id }}"
-                                    class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300
-                                        {{ $photo->isLikedBy(auth()->user())
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-gray-200 text-gray-700'
-                                        }} hover:bg-red-500 hover:text-white"
-                                >
+                                <button onclick="toggleLike({{ $photo->id }})"
+                                        id="likeButton-{{ $photo->id }}"
+                                        class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-full transition-all duration-300
+                                            {{ $photo->isLikedBy(auth()->user())
+                                                ? 'bg-red-500 hover:bg-red-600 text-white'
+                                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                            }}">
                                     <i class="fas fa-heart"></i>
                                     <span id="likeCount-{{ $photo->id }}">{{ $photo->likes_count }}</span>
                                 </button>
                             @else
-                                <div class="login-message">
-                                    <i class="fas fa-heart text-4xl text-red-500 mb-4"></i>
-                                    <p class="text-gray-600 mb-4">Ingin menyukai foto ini? Silakan login terlebih dahulu</p>
-                                    <a href="{{ route('login') }}" class="login-button">
-                                        <i class="fas fa-sign-in-alt"></i>
-                                        <span>Login Sekarang</span>
+                                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                    <p class="text-sm text-blue-600 mb-2">Login untuk menyukai foto ini</p>
+                                    <a href="{{ route('login') }}" 
+                                       class="inline-block bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-600 transition-colors duration-300">
+                                        Login Sekarang
                                     </a>
                                 </div>
                             @endauth
-                        </div>
 
-                        <!-- Comments Section -->
-                        <div class="mt-8">
-                            <h4 class="text-lg font-semibold mb-4">Komentar</h4>
+                            <!-- Share Buttons -->
+                            <div class="flex items-center space-x-2">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
+                                   target="_blank"
+                                   class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm text-center transition-colors duration-300">
+                                    <i class="fab fa-facebook-f mr-2"></i>Share
+                                </a>
+                                <button onclick="shareToInstagram('{{ $photo->image }}', '{{ $photo->judul ?? 'Photo' }}')"
+                                        class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-4 rounded-full text-sm text-center transition-colors duration-300">
+                                    <i class="fab fa-instagram mr-2"></i>Share
+                                </button>
+                                <a href="{{ $photo->image }}"
+                                   download="{{ $photo->judul ?? 'Photo' }}"
+                                   class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full text-sm text-center transition-colors duration-300">
+                                    <i class="fas fa-download mr-2"></i>Download
+                                </a>
+                            </div>
 
-                            @auth
-                                @if(auth()->user()->role === 'user')
+                            <!-- Comments Section -->
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold mb-4">Komentar</h4>
+                                
+                                @auth
                                     <form action="{{ route('comments.store') }}" method="POST" class="mb-6">
                                         @csrf
                                         <input type="hidden" name="photo_id" value="{{ $photo->id }}">
                                         <textarea
                                             name="comment"
-                                            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
                                             placeholder="Tulis komentar Anda..."
                                             rows="3"
                                             required
                                         ></textarea>
-                                        <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                        <button type="submit" 
+                                                class="mt-2 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300">
                                             Kirim Komentar
                                         </button>
                                     </form>
-                                @endif
-                            @else
-                                <div class="login-message">
-                                    <i class="fas fa-comments text-4xl text-blue-500 mb-4"></i>
-                                    <p class="text-gray-600 mb-4">Bergabunglah dalam diskusi! Login untuk memberikan komentar</p>
-                                    <a href="{{ route('login') }}" class="login-button">
-                                        <i class="fas fa-sign-in-alt"></i>
-                                        <span>Login untuk Komentar</span>
-                                    </a>
-                                </div>
-                            @endauth
+                                @else
+                                    <div class="bg-gray-50 p-4 rounded-lg text-center mb-6">
+                                        <p class="text-gray-600 mb-2">Login untuk memberikan komentar</p>
+                                        <a href="{{ route('login') }}" 
+                                           class="inline-block bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
+                                            Login Sekarang
+                                        </a>
+                                    </div>
+                                @endauth
 
-                            <!-- Daftar Komentar -->
-                            <div class="space-y-4">
-                                @if($photo->comments && $photo->comments->count() > 0)
-                                    @foreach($photo->comments as $comment)
+                                <!-- Daftar Komentar -->
+                                <div class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+                                    @forelse($photo->comments as $comment)
                                         <div class="bg-gray-50 p-4 rounded-lg">
-                                            <!-- User Comment -->
-                                            <div class="flex items-start space-x-3">
-                                                <div class="flex-1">
-                                                    <div class="flex items-center mb-1">
-                                                        <span class="font-semibold text-gray-800">{{ $comment->user->name }}</span>
-                                                        <span class="text-gray-500 text-sm ml-2">{{ $comment->created_at->diffForHumans() }}</span>
-
-                                                        <!-- Delete Button (for admin and comment owner) -->
-                                                        @auth
-                                                            @if(auth()->user()->role === 'admin' || auth()->id() === $comment->user_id)
-                                                                <button
-                                                                    onclick="deleteComment({{ $comment->id }})"
-                                                                    class="ml-2 text-red-500 hover:text-red-700 transition-colors duration-200"
-                                                                    title="Hapus komentar"
-                                                                >
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            @endif
-                                                        @endauth
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    @if($comment->user->avatar)
+                                                        <img src="{{ asset($comment->user->avatar) }}" 
+                                                             alt="Profile" 
+                                                             class="w-8 h-8 rounded-full">
+                                                    @else
+                                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                                                            {{ substr($comment->user->name, 0, 1) }}
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <p class="font-semibold">{{ $comment->user->name }}</p>
+                                                        <p class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
                                                     </div>
-                                                    <p class="text-gray-700">{{ $comment->comment }}</p>
-
-                                                    <!-- Toggle Button for Replies -->
-                                                    @if($comment->replies && count($comment->replies) > 0)
-                                                        <button
-                                                            onclick="toggleAdminReplies({{ $comment->id }})"
-                                                            class="text-blue-500 text-sm mt-2 hover:underline flex items-center"
-                                                        >
-                                                            <span id="toggleText-{{ $comment->id }}">Lihat balasan admin</span>
-                                                            <i id="toggleIcon-{{ $comment->id }}" class="fas fa-chevron-down ml-1"></i>
+                                                </div>
+                                                
+                                                @auth
+                                                    @if(auth()->user()->role === 'admin' || auth()->id() === $comment->user_id)
+                                                        <button onclick="deleteComment({{ $comment->id }})"
+                                                                class="text-red-500 hover:text-red-700">
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
                                                     @endif
-                                                </div>
+                                                @endauth
                                             </div>
+                                            <p class="mt-2 text-gray-700">{{ $comment->comment }}</p>
 
-                                            <!-- Admin Replies (Hidden by default) -->
-                                            <div id="adminReplies-{{ $comment->id }}" class="hidden mt-3">
-                                                @if($comment->replies)
+                                            <!-- Admin Replies -->
+                                            @if($comment->replies && count($comment->replies) > 0)
+                                                <div class="mt-4 ml-8 space-y-3">
                                                     @foreach($comment->replies as $reply)
-                                                        <div class="admin-reply" data-reply-id="{{ $reply->id }}">
+                                                        <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500">
                                                             <div class="flex justify-between items-start">
                                                                 <div>
-                                                                    <span class="admin-badge">
-                                                                        <i class="fas fa-shield-alt mr-1"></i>Admin
-                                                                    </span>
-                                                                    <div class="flex items-center mb-1">
-                                                                        <span class="font-semibold text-gray-800">
-                                                                            {{ $reply->admin ? $reply->admin->name : 'Admin' }}
-                                                                        </span>
-                                                                        <span class="text-gray-500 text-sm ml-2">
-                                                                            {{ $reply->created_at->diffForHumans() }}
-                                                                        </span>
-                                                                    </div>
+                                                                    <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Admin</span>
+                                                                    <p class="mt-2">{{ $reply->reply }}</p>
+                                                                    <p class="text-sm text-gray-500 mt-1">{{ $reply->created_at->diffForHumans() }}</p>
                                                                 </div>
-
                                                                 @auth
                                                                     @if(auth()->user()->role === 'admin')
-                                                                        <button
-                                                                            onclick="deleteAdminReply({{ $reply->id }})"
-                                                                            class="ml-2 text-red-500 hover:text-red-700 transition-colors duration-200"
-                                                                            title="Hapus balasan"
-                                                                        >
+                                                                        <button onclick="deleteAdminReply({{ $reply->id }})"
+                                                                                class="text-red-500 hover:text-red-700">
                                                                             <i class="fas fa-trash"></i>
                                                                         </button>
                                                                     @endif
                                                                 @endauth
                                                             </div>
-                                                            <p class="text-gray-700">{{ $reply->reply }}</p>
                                                         </div>
                                                     @endforeach
-                                                @endif
-                                            </div>
+                                                </div>
+                                            @endif
 
-                                            <!-- Reply Button (Only visible to admin) -->
+                                            <!-- Admin Reply Form -->
                                             @auth
                                                 @if(auth()->user()->role === 'admin')
-                                                    <button
-                                                        onclick="toggleReplyForm({{ $comment->id }})"
-                                                        class="text-blue-500 text-sm mt-2 hover:underline"
-                                                    >
+                                                    <button onclick="toggleReplyForm({{ $comment->id }})"
+                                                            class="text-blue-500 text-sm mt-2 hover:underline">
                                                         Reply
                                                     </button>
-
-                                                    <!-- Reply Form -->
                                                     <div id="replyForm-{{ $comment->id }}" class="mt-3 hidden">
                                                         <form action="{{ route('admin.reply.store') }}" method="POST">
                                                             @csrf
                                                             <input type="hidden" name="comment_id" value="{{ $comment->id }}">
                                                             <textarea
                                                                 name="reply"
-                                                                class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                                class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
                                                                 placeholder="Tulis balasan..."
                                                                 rows="2"
                                                                 required
                                                             ></textarea>
-                                                            <button type="submit" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
+                                                            <button type="submit" 
+                                                                    class="mt-2 px-4 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
                                                                 Kirim Balasan
                                                             </button>
                                                         </form>
@@ -786,55 +857,20 @@
                                                 @endif
                                             @endauth
                                         </div>
-                                    @endforeach
-                                @else
-                                    <p class="text-gray-500 text-center">Belum ada komentar.</p>
-                                @endif
+                                    @empty
+                                        <p class="text-center text-gray-500">Belum ada komentar.</p>
+                                    @endforelse
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Stats -->
-                        <div class="flex items-center space-x-6 mt-4 text-gray-600 text-sm">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-eye"></i>
-                                <span>{{ $photo->views_count }} views</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-heart"></i>
-                                <span>{{ $photo->likes_count }} likes</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-comment"></i>
-                                <span>{{ $photo->comments_count }} comments</span>
-                            </div>
-                        </div>
-
-                        <!-- Share Buttons -->
-                        <div class="share-buttons">
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
-                               target="_blank"
-                               class="share-button share-facebook">
-                                <i class="fab fa-facebook-f"></i>
-                                <span>Facebook</span>
-                            </a>
-                            <button onclick="shareToInstagram('{{ $photo->image }}', '{{ $photo->judul ?? 'Photo' }}')"
-                                    class="share-button share-instagram">
-                                <i class="fab fa-instagram"></i>
-                                <span>Instagram</span>
-                            </button>
-                            <a href="{{ $photo->image }}"
-                               download="{{ $photo->judul ?? 'Photo' }}"
-                               class="share-button bg-gradient-to-r from-green-500 to-green-600 text-white">
-                                <i class="fas fa-download"></i>
-                                <span>Download</span>
-                            </a>
                         </div>
                     </div>
-                </div>
                 @endforeach
             @else
-                <div class="text-center py-8">
-                    <p class="text-gray-500">Tidak ada foto yang tersedia.</p>
+                <div class="col-span-full text-center py-12">
+                    <div class="bg-gray-50 rounded-xl p-8">
+                        <i class="fas fa-images text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500 text-lg">Tidak ada foto yang tersedia.</p>
+                    </div>
                 </div>
             @endif
         </div>
@@ -898,6 +934,7 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
     <script>
         AOS.init({
             duration: 800,
@@ -1175,6 +1212,21 @@
                 }
             });
         }
+
+        // Konfigurasi Lightbox
+        lightbox.option({
+            'resizeDuration': 200,
+            'wrapAround': true,
+            'albumLabel': 'Foto %1 dari %2',
+            'fadeDuration': 300,
+            'imageFadeDuration': 300,
+            'positionFromTop': 50,
+            'maxWidth': 1200,
+            'maxHeight': 800,
+            'fitImagesInViewport': true,
+            'showImageNumberLabel': true,
+            'disableScrolling': true
+        });
     </script>
 </body>
 

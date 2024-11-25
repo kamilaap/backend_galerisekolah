@@ -5,13 +5,14 @@ namespace App\Models;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'last_login_at'
+        'name', 'email', 'password', 'avatar', 'role'
     ];
 
     protected $hidden = [
@@ -37,5 +38,14 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function getAvatarAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        return Storage::url($value);
     }
 }
