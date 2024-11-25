@@ -10,7 +10,10 @@ class Jurusan extends Model
     use HasFactory;
     protected $table = 'jurusan'; // Pastikan ini sesuai dengan nama tabel
 
-    protected $fillable = ['nama', 'deskripsi'];
+    protected $fillable = [
+        'nama',
+        'deskripsi'
+    ];
 
     public function galery()
     {
